@@ -1,0 +1,3 @@
+/Users/sergeyshorin/Documents/development/serpinskiTriangle/cmake-build-debug/CMakeFiles/serpinskiTriangle.dir
+/Users/sergeyshorin/Documents/development/serpinskiTriangle/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/sergeyshorin/Documents/development/serpinskiTriangle/cmake-build-debug/CMakeFiles/rebuild_cache.dir
