@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <sstream>
 
 int main() {
 
@@ -12,6 +13,19 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Serpinski Triangle");
     window.setFramerateLimit(20); // обновление экрана 60 раз в секунду
+
+    // Ползунок для FPS
+    const float sliderWidth = 200.0f;
+    const float sliderHeight = 10.0f;
+    sf::RectangleShape sliderBar(sf::Vector2f(sliderWidth, sliderHeight));
+    sliderBar.setFillColor(sf::Color::Black);
+    sliderBar.setPosition(10, 40);
+
+    sf::RectangleShape sliderHandle(sf::Vector2f(10, 30));
+    sliderHandle.setFillColor(sf::Color::Blue);
+    sliderHandle.setPosition(10, 30);
+
+    int currentFPS = 30;
 
     std::vector<sf::Vector2f> trianglePoints;
     sf::Vector2f currentPoint; // начальная точка
@@ -38,6 +52,26 @@ int main() {
                     drawingStarted = true;
                 }
             }
+
+            // Обработка перемещения ползунка (только если рисование началось)
+            if (drawingStarted && event.type == sf::Event::MouseMoved && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                float mouseX = sf::Mouse::getPosition(window).x;
+
+                // Проверяем, если мышь в пределах полосы
+                if (mouseX >= sliderBar.getPosition().x &&
+                    mouseX <= sliderBar.getPosition().x + sliderWidth - sliderHandle.getSize().x) {
+
+                    sliderHandle.setPosition(mouseX, sliderHandle.getPosition().y);
+
+                    // Обновление FPS
+                    float sliderValue = (sliderHandle.getPosition().x - sliderBar.getPosition().x) / (sliderWidth - sliderHandle.getSize().x);
+                    currentFPS = static_cast<int>(sliderValue * 2000); // Диапазон FPS: 30 - 2000
+                    currentFPS = std::max(30, currentFPS); // Минимум 30 FPS
+
+                    window.setFramerateLimit(currentFPS);
+
+                    }
+            }
         }
         window.clear(sf::Color::White);
         if (drawingStarted && pointsDrawn < maxPoints) {
@@ -56,6 +90,9 @@ int main() {
         for (const auto& point : points) {
             window.draw(point);
         }
+
+        window.draw(sliderBar);
+        window.draw(sliderHandle);
         window.display();
     }
 
