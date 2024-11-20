@@ -1,3 +1,4 @@
+#include "ArialFont.h"
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <ctime>
@@ -12,7 +13,7 @@ int main() {
     const int windowHeight = 800;
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Serpinski Triangle");
-    window.setFramerateLimit(20); // обновление экрана 60 раз в секунду
+    window.setFramerateLimit(20); // обновление экрана 20 раз в секунду
 
     // Ползунок для FPS
     const float sliderWidth = 200.0f;
@@ -40,6 +41,18 @@ int main() {
     sf::CircleShape currentPointShape(3.0f);
     currentPointShape.setFillColor(sf::Color::Magenta);
 
+    // Кнопка "Restart"
+    sf::RectangleShape restartButton(sf::Vector2f(100.0f, 40.0f));
+    restartButton.setFillColor(sf::Color::Blue);
+    restartButton.setPosition(10, 100);
+
+    sf::Font fromMem;
+    fromMem.loadFromMemory(&arial_ttf, arial_ttf_len);
+
+    sf::Text restartText("Restart", fromMem, 20);
+    restartText.setFillColor(sf::Color::White);
+    restartText.setPosition(20, 110);
+
     bool drawingStarted = false; // флаг начала рисования
     int pointsDrawn = 0;
 
@@ -56,6 +69,18 @@ int main() {
                 } else if (trianglePoints.size() == 3 && event.mouseButton.button == sf::Mouse::Left) {
                     currentPoint = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
                     drawingStarted = true;
+                }
+            }
+
+            // Обработка клика на кнопку рестарта
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (restartButton.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+                    // Сброс значений
+                    trianglePoints.clear();
+                    points.clear();
+                    drawingStarted = false;
+                    pointsDrawn = 0;
                 }
             }
 
@@ -113,6 +138,8 @@ int main() {
         if (drawingStarted) { // Ползунок активен только при начале рисования
             window.draw(sliderHandle);
         }
+        window.draw(restartButton);
+        window.draw(restartText);
         window.display();
     }
 
