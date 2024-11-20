@@ -25,7 +25,7 @@ int main() {
     sliderHandle.setFillColor(sf::Color::Blue);
     sliderHandle.setPosition(10, 30);
 
-    int currentFPS = 30;
+    int currentFPS = 10; // начальное значение FPS
 
     std::vector<sf::Vector2f> trianglePoints;
     sf::Vector2f currentPoint; // начальная точка
@@ -33,6 +33,12 @@ int main() {
 
     sf::CircleShape pointShape(2.0f); // точка будет кругом радиусом 2
     pointShape.setFillColor(sf::Color::Blue);
+    // Вершины треугольника
+    sf::CircleShape vertexShape(5.0f); // Вершины будут кругами радиусом 5
+    vertexShape.setFillColor(sf::Color::Red);
+    // Текущая точка
+    sf::CircleShape currentPointShape(3.0f);
+    currentPointShape.setFillColor(sf::Color::Magenta);
 
     bool drawingStarted = false; // флаг начала рисования
     int pointsDrawn = 0;
@@ -65,15 +71,27 @@ int main() {
 
                     // Обновление FPS
                     float sliderValue = (sliderHandle.getPosition().x - sliderBar.getPosition().x) / (sliderWidth - sliderHandle.getSize().x);
-                    currentFPS = static_cast<int>(sliderValue * 2000); // Диапазон FPS: 30 - 2000
-                    currentFPS = std::max(30, currentFPS); // Минимум 30 FPS
+                    currentFPS = static_cast<int>(sliderValue * 2000); // Диапазон FPS: 10 - 2000
+                    currentFPS = std::max(10, currentFPS); // Минимум 10 FPS
 
                     window.setFramerateLimit(currentFPS);
 
                     }
             }
         }
+
         window.clear(sf::Color::White);
+
+        // Рисуем начальные точки (вершины треугольника)
+        for (const auto& point : trianglePoints) {
+            vertexShape.setPosition(point.x - vertexShape.getRadius(), point.y - vertexShape.getRadius());
+            window.draw(vertexShape);
+        }
+
+        // Рисуем текущую точку
+        currentPointShape.setPosition(currentPoint.x - currentPointShape.getRadius(), currentPoint.y - currentPointShape.getRadius());
+        window.draw(currentPointShape);
+
         if (drawingStarted && pointsDrawn < maxPoints) {
             // Генерация новой точки
             sf::Vector2f target = trianglePoints[std::rand() % 3];
@@ -92,7 +110,9 @@ int main() {
         }
 
         window.draw(sliderBar);
-        window.draw(sliderHandle);
+        if (drawingStarted) { // Ползунок активен только при начале рисования
+            window.draw(sliderHandle);
+        }
         window.display();
     }
 
